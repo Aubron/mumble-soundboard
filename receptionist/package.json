@@ -1,0 +1,26 @@
+{
+  "name": "mumble-soundboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aubron/mumble-soundboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aubron/mumble-soundboard/issues"
+  },
+  "homepage": "https://github.com/Aubron/mumble-soundboard#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "lame": "^1.2.4",
+    "mumble": "^0.3.19",
+    "node-fetch": "^2.3.0"
+  }
+}
