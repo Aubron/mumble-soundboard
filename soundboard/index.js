@@ -18,19 +18,27 @@ var options = {
 mumble.connect( process.env.MUMBLE_URL, options, function( error, client ) {
     if( error ) { throw new Error( error ); }
 
-    client.authenticate('DJ');
+    client.authenticate('Soundboard');
     client.on( 'initialized', function() {
         const mixer = new AudioMixer.Mixer({
-            channels: 1,
-            sampleRate: 48000,
-            clearInterval: 3000,
+            channels: 2,
+            sampleRate: 44100,
+            clearInterval: 150,
+            volume: 2,
         });
-        var input = client.inputStream();
+        var input = client.inputStream({
+            channels: 2,
+            sampleRate: 44100,
+        });
         mixer.pipe(input);
 
         // start the webserver
         app.listen(port);
+        app.use(express.json())
         app.route('/play')
             .post(controllers.playSound(mixer))
+        
+        app.route('/playremote')
+            .post(controllers.playRemoteSound(mixer))
     });
 });
