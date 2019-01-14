@@ -35,6 +35,9 @@ const uploadSound = async (name,data) => {
 }
 
 module.exports = {
+    healthCheck: (req,res) => {
+        return res.send('OK')
+    },
     playSound: (mixer) => ((req,res) => {
         if (!req.body.file) {
             return res.status(400).send('No filename specified');
@@ -117,6 +120,6 @@ module.exports = {
             },
             TableName: process.env.DYNAMO_TABLE,
         }
-        return res.send(await dynamodb.deleteItem(params).promise());
+        return res.send(await dynamoDb.deleteItem(params).promise());
     }
 }
