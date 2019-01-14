@@ -10,15 +10,11 @@ const playStream = (mixer,stream) => {
     // wait til we get format information before we play
     reader.on( 'format', (format) => {
         console.log(format);
-        //create a standalone mixer
-        let input = new AudioMixer.Input({
-            sampleRate: format.sampleRate,
-            channels: format.channels,
-            bitDepth: format.bitDepth,
-            volume: 100,
-        })
         // add the mixer to the input
-        mixer.addInput(input)
+        let input = mixer.input({
+            ...format,
+            volume: 100
+        })
 
         //pipe the decoded content through the throttler to the mixer input
         let throttler = new StreamThrottle.Throttle({rate: format.byteRate})
