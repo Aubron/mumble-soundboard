@@ -38,6 +38,7 @@ const connect = async () => {
                 channels: 2,
                 sampleRate: 44100,
                 volume: 100,
+                clearInterval: 150
             });
             var input = client.inputStream({
                 channels: 2,

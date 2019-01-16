@@ -5,6 +5,9 @@ const wav = require('wav')
 const Duplex = require('stream').Duplex;
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const uuid4 = require('uuid4');
+const fs = require('fs');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 const uploadSound = async (name,data) => {
     var dynamoDb = new DynamoDB({region: process.env.AWS_REGION});
@@ -30,7 +33,9 @@ const uploadSound = async (name,data) => {
         Key: uuid + '.wav',
         Bucket: process.env.S3_BUCKET,
     }
-    await s3.putObject(params).promise();
+    console.log('preput')
+    const result = await s3.putObject(params).promise();
+    console.log(result);
     return uuid;
 }
 
@@ -51,28 +56,25 @@ module.exports = {
         }
         let data = req.files.sound.data;
         let name = req.files.sound.name.split('.').slice(0, -1).join('.')
-        if (req.files.sound.mimetype === 'audio/mp3') {
-            var decoder = new lame.Decoder();
-            let stream = new Duplex();
-            stream.push(data);
-            stream.push(null);
+        let stream = new Duplex();
+        // push the content to the stream.
+        stream.push(data);
+        stream.push(null);
 
-            decoder.on( 'format', async (format) => {
-                const writer = new wav.Writer(format);
-                decoder.pipe(writer)
-                const buffers = [];
-                writer.on('data', (data) => buffers.push(data))
-                writer.on('end', async () => {
-                    let id = await uploadSound(name,Buffer.concat(buffers));
-                    return res.send({id});
-                })
-            });
-
-            stream.pipe( decoder );
-        } else if (req.files.sound.mimetype === 'audio/wav') {
-            let id = await uploadSound(name,data);
-            return res.send({id});
-        }
+        // temp uuid for concurrency
+        let tmpName = uuid4();
+        // create a fs stream
+        let fileStream = fs.createWriteStream(`tmp/${tmpName}.tmp`);
+        stream.pipe(fileStream)
+        
+        stream.on('end',async () => {
+            await exec(`ffmpeg -i ./tmp/${tmpName}.tmp -ar 44100 ./tmp/${tmpName}.wav`)
+            let file = fs.readFileSync(`tmp/${tmpName}.wav`)
+            fs.unlinkSync(`tmp/${tmpName}.wav`)
+            fs.unlinkSync(`tmp/${tmpName}.tmp`)
+            let id = await uploadSound(name, file);
+            return res.send({id})
+        })
     },
     getSounds: async (req,res) => {
         var docClient = new DynamoDB.DocumentClient({region: process.env.AWS_REGION});
