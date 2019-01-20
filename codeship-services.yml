@@ -8,4 +8,4 @@ awsdeployment:
 node:
   image: node:10
   volumes:
-    - ./soundboard-ui:/
+    - ./soundboard-ui:/app
