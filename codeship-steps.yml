@@ -22,3 +22,6 @@
 - name: Force receptionist service reboot
   service: awsdeployment
   command: aws ecs update-service --cluster mumble --service receptionist --force-new-deployment
+- name: Force cloudfront invalidation
+  service: awsdeployment
+  command: aws cloudfront create-invalidation --distribution-id E28XBTIRAYUZNT --paths /index.html
