@@ -19,3 +19,4 @@ receptionist:
   build:
     image: 343167843863.dkr.ecr.us-west-2.amazonaws.com/mumble-receptionist
     context: ./receptionist
+    dockerfile: Dockerfile
