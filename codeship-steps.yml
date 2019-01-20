@@ -1,3 +1,9 @@
+- name: Push Soundboard To ECR
+  service: soundboard
+  type: push
+  image_name: 343167843863.dkr.ecr.us-west-2.amazonaws.com/mumble-soundboard
+  registry: https://343167843863.dkr.ecr.us-west-2.amazonaws.com
+  dockercfg_service: dockercfg_generator
 - name: Push Receptionist To ECR
   service: receptionist
   type: push
@@ -10,3 +16,9 @@
 - name: Deploy Soundboard UI to S3
   service: awsdeployment
   command: aws s3 sync /deploy/soundboard-ui/build s3://soundboard.aubronwood.com
+- name: Force soundboard service reboot
+  service: awsdeployment
+  command: aws ecs update-service --cluster mumble --service soundboard --force-new-deployment
+- name: Force receptionist service reboot
+  service: awsdeployment
+  command: aws ecs update-service --cluster mumble --service receptionist --force-new-deployment
