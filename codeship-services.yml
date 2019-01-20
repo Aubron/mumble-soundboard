@@ -7,6 +7,8 @@ awsdeployment:
     - ./:/deploy
 node:
   image: node:10
+  environment:
+    - REACT_APP_SBAPI_ENDPOINT=https://soundboard.aubronwood.com/api
   volumes:
     - ./soundboard-ui:/app
 dockercfg_generator:

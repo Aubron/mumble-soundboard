@@ -56,9 +56,9 @@ const connect = async () => {
             app.listen(port);
             app.route('/')
                 .get(controllers.healthCheck)
-            app.route('/sounds')
+            app.route('/api/sounds')
                 .get(controllers.getSounds)
-            app.route('/sound')
+            app.route('/api/sound')
                 .post(controllers.playSound(mixer))
                 .put(controllers.uploadSound)
                 .patch(controllers.renameSound)
