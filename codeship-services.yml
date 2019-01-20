@@ -13,6 +13,8 @@ dockercfg_generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
   encrypted_env_file: aws-deployment.env.encrypted
+  environment:
+    - AWS_REGION=us-west-2
 receptionist:
   build:
     image: 343167843863.dkr.ecr.us-west-2.amazonaws.com/mumble-receptionist
