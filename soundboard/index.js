@@ -9,11 +9,15 @@ const S3 = require('aws-sdk/clients/s3')
 const Route53 = require('aws-sdk/clients/route53')
 const request = require('request');
 const cors = require('cors')
+const cacheControl = require('express-cache-controller')
 
 const app = express()
 app.use(fileUpload())
 app.use(express.json())
 app.use(cors())
+app.use(cacheControl({
+    noCache: true
+}))
 const port = process.env.PORT || 3000;
 
 
