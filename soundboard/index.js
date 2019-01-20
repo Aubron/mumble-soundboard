@@ -29,6 +29,12 @@ const connect = async () => {
         cert: cert.Body
     };
 
+    
+    console.log('initializing client');
+    console.log('using keys', `${keyPrefix}key.pem`, `${keyPrefix}cert.pem`);
+    console.log('and attempting to connect with username ',process.env.MUMBLE_USERNAME);
+    console.log(key.Body);
+
     mumble.connect( process.env.MUMBLE_URL, options, function( error, client ) {
         if( error ) { throw new Error( error ); }
     

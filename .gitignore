@@ -56,6 +56,8 @@ typings/
 
 # dotenv environment variables file
 .env
+*.env
+!*.encrypted.env
 
 # next.js build output
 .next
@@ -63,3 +65,4 @@ cert.pem
 key.pem
 *.mp3
 *.wav
+codeship.aes
