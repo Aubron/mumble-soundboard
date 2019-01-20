@@ -1,4 +1,4 @@
 - service: node
-  command: cd /app && yarn install && yarn build
+  command: yarn install && yarn build
 - service: awsdeployment
   command: aws s3 sync /deploy/soundboard-ui/build s3://soundboard.aubronwood.com
