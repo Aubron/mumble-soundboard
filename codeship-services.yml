@@ -12,7 +12,7 @@ node:
 dockercfg_generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
-  encrypted_env_file: aws.env.encrypted
+  encrypted_env_file: aws-deployment.env.encrypted
 receptionist:
   build:
     image: 343167843863.dkr.ecr.us-west-2.amazonaws.com/mumble-receptionist
