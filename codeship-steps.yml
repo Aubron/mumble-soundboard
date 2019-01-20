@@ -1,4 +1,12 @@
-- service: node
+- name: Push Receptionist To ECR
+  service: receptionist
+  type: push
+  image_name: 343167843863.dkr.ecr.us-west-2.amazonaws.com/mumble-receptionist
+  registry: https://343167843863.dkr.ecr.us-west-2.amazonaws.com
+  dockercfg_service: dockercfg_generator
+- name: Build Soundboard UI
+  service: node
   command: bash -c "cd /app && yarn install && yarn build"
-- service: awsdeployment
+- name: Deploy Soundboard UI to S3
+  service: awsdeployment
   command: aws s3 sync /deploy/soundboard-ui/build s3://soundboard.aubronwood.com

@@ -9,3 +9,11 @@ node:
   image: node:10
   volumes:
     - ./soundboard-ui:/app
+dockercfg_generator:
+  image: codeship/aws-ecr-dockercfg-generator
+  add_docker: true
+  encrypted_env_file: aws.env.encrypted
+receptionist:
+  build:
+    image: 343167843863.dkr.ecr.us-west-2.amazonaws.com/mumble-receptionist
+    dockerfile_path: ./receptionist/Dockerfile
