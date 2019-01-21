@@ -13,7 +13,7 @@ const playStream = (mixer,stream) => {
         // add the mixer to the input
         let input = mixer.input({
             ...format,
-            volume: 100
+            volume: 12
         })
 
         //pipe the decoded content through the throttler to the mixer input
