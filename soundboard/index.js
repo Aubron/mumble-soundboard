@@ -47,7 +47,7 @@ const connect = async () => {
             const mixer = new AudioMixer.Mixer({
                 channels: 2,
                 sampleRate: 44100,
-                volume: 100,
+                volume: 50,
                 clearInterval: 150
             });
             var input = client.inputStream({
