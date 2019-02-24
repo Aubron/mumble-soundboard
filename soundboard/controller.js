@@ -126,10 +126,12 @@ module.exports = {
     },
     sendMessage: (client) => (req,res) => {
         const channel = client.channelById(process.env.MUMBLE_MESSAGE_CHANNEL)
-        channel.sendMessage(`${req.body.user_name}: ${req.body.text}`)
-        channel.children.forEach((subChannel, index) => {
-            subChannel.sendMessage(`${req.body.user_name}: ${req.body.text}`)
-        })
+        if (channel && req.body.user_name !== 'slackbot') {
+            channel.sendMessage(`${req.body.user_name}: ${req.body.text}`)
+            channel.children.forEach((subChannel, index) => {
+                subChannel.sendMessage(`${req.body.user_name}: ${req.body.text}`)
+            })
+        }
         res.send('OK');
     }
 }

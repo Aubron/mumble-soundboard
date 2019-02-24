@@ -23,6 +23,8 @@ app.use(cacheControl({
 }))
 const port = process.env.PORT || 3000;
 
+let debug = false;
+
 
 const connect = async () => {
     // get the key and cert from s3 for easy config
@@ -40,6 +42,11 @@ const connect = async () => {
     console.log('initializing client');
     console.log('using keys', `${keyPrefix}key.pem`, `${keyPrefix}cert.pem`);
     console.log('and attempting to connect with username ',process.env.MUMBLE_USERNAME);
+
+    // suppress slack events so that they don't spam on connect/disconnect
+    console.log('suppressing slack events');
+    debug = true;
+    setTimeout(() => { debug = false; console.log('unsupressing slack events.') }, 10000)
 
     mumble.connect( process.env.MUMBLE_URL, options, function( error, client ) {
         if( error ) { throw new Error( error ); }
@@ -77,8 +84,16 @@ const connect = async () => {
 
         if (process.env.SLACK_WEBHOOK) {
             console.log('Slack Integration Enabled')
+            // Disconnect events
+            client.on( 'protocol-in', function (data) {
+                if (data.handler === 'userRemove') {
+                    let user = sessions[data.message.session];
+                    slackMessage(user.name, '_Disconnected_')
+                }
+            });
             // Collect user information
             var sessions = {};
+
             client.on( 'userState', function (state) {
                 var user = sessions[state.actor];
                 if (sessions[state.session]) {
@@ -99,6 +114,9 @@ const connect = async () => {
                     
                 } else {
                     sessions[state.session] = state;
+                    if(state.name) {
+                        slackMessage(state.name, '_Connected_')
+                    }
                 }
 
                 Object.keys(state).forEach((key) => {
@@ -127,16 +145,21 @@ const connect = async () => {
 }
 
 const slackMessage = (username, message) => {
-    fetch(process.env.SLACK_WEBHOOK, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            username: username,
-            text: message
-        })
-    });
+    if (debug === false) {
+        fetch(process.env.SLACK_WEBHOOK, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                text: message
+            })
+        });
+    } else {
+        console.log('message supressed due to debug flag')
+    }
+    
 }
 
 const updateRoute53 = () => {
