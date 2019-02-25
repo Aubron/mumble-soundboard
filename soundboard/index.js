@@ -79,6 +79,8 @@ const connect = async () => {
             if(process.env.SLACK_WEBHOOK) {
                 app.route('/api/message')
                     .post(controllers.sendMessage(client))
+                app.route('/api/users')
+                    .get(controllers.getUsers(client))
             }
         });
 
@@ -87,34 +89,37 @@ const connect = async () => {
             // Disconnect events
             client.on( 'protocol-in', function (data) {
                 if (data.handler === 'userRemove') {
-                    let user = sessions[data.message.session];
-                    slackMessage(user.name, '_Disconnected_')
+                    let user = client.userBySession(data.message.session);
+                    if (user.isRegistered()) {
+                        slackMessage(user.name, '_Disconnected_')
+                    }
                 }
             });
             // Collect user information
             var sessions = {};
 
             client.on( 'userState', function (state) {
-                var user = sessions[state.actor];
+                console.log(state);
+                var user = client.userBySession(state.session || state.actor);
                 if (sessions[state.session]) {
                     if (state.channel_id && state.channel_id !== sessions[state.session].channel_id) {
                         // don't actually want that data. It's an option though!
                         //slackMessage(user.name, `_Moved from ${channels[sessions[state.session].channel_id].name} to ${channels[state.channel_id].name}_`)
                     }
                     if (
-                        (state.self_mute !== null && state.self_mute !== sessions[state.session].self_mute)
+                        (state.self_mute !== null && state.self_mute !== sessions[state.session].self_mute && user.isRegistered())
                     ) {
                         slackMessage(user.name, state.self_mute ? '_Muted_' : '_Unmuted_')
                     }
                     if (
-                        (state.self_deaf !== null && state.self_deaf !== sessions[state.session].self_deaf)
+                        (state.self_deaf !== null && state.self_deaf !== sessions[state.session].self_deaf && user.isRegistered())
                     ) {
                         slackMessage(user.name, state.self_deaf ? '_Deafened_' : '_Undeafened_')
                     }
                     
                 } else {
                     sessions[state.session] = state;
-                    if(state.name) {
+                    if(state.name && user.isRegistered()) {
                         slackMessage(state.name, '_Connected_')
                     }
                 }
@@ -145,7 +150,7 @@ const connect = async () => {
 }
 
 const slackMessage = (username, message) => {
-    if (debug === false) {
+    if (debug === false && username.indexOf('Soundboard') === -1) {
         fetch(process.env.SLACK_WEBHOOK, {
             method: "POST",
             headers: {

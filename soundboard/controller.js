@@ -133,5 +133,20 @@ module.exports = {
             })
         }
         res.send('OK');
+    },
+    getUsers: (client) => (req,res) => {
+        const users = client.users().map((user) => {
+            return {
+                name: user.name,
+                selfDeaf: user.selfDeaf
+            }
+        });
+        let output = "*Current Mumble Users*\n"
+        for(let i = 0; i < users.length; i++) {
+            let user = users[i];
+            let emoji = user.selfDeaf ? ':mute:' : ':speaker:';
+            output += `${emoji} ${user.name}\n`
+        }
+        res.send(output)
     }
 }
