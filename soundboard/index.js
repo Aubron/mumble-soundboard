@@ -89,9 +89,8 @@ const connect = async () => {
             // Disconnect events
             client.on( 'protocol-in', function (data) {
                 if (data.handler === 'userRemove') {
-                    let user = client.userBySession(data.message.session);
-                    if (user.isRegistered()) {
-                        slackMessage(user.name, '_Disconnected_')
+                    if (sessions[data.message.session].registered) {
+                        slackMessage(sessions[data.message.session].name, '_Disconnected_')
                     }
                 }
             });
@@ -99,7 +98,6 @@ const connect = async () => {
             var sessions = {};
 
             client.on( 'userState', function (state) {
-                console.log(state);
                 var user = client.userBySession(state.session || state.actor);
                 if (sessions[state.session]) {
                     if (state.channel_id && state.channel_id !== sessions[state.session].channel_id) {
@@ -129,6 +127,7 @@ const connect = async () => {
                     if (value !== null) {
                         sessions[state.session][key] = value;
                     }
+                    sessions[state.session].registered = user.isRegistered;
                 })
             });
 
