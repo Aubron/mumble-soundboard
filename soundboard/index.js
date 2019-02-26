@@ -127,7 +127,7 @@ const connect = async () => {
                     if (value !== null) {
                         sessions[state.session][key] = value;
                     }
-                    sessions[state.session].registered = user.isRegistered;
+                    sessions[state.session].registered = user.isRegistered();
                 })
             });
 
