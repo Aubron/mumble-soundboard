@@ -1,0 +1,19 @@
+{
+  "name": "stenographer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon ."
+  },
+  "dependencies": {
+    "aws-sdk": "^2.410.0",
+    "dotenv": "^6.2.0",
+    "fetch": "^1.1.0",
+    "mumble": "^0.3.19",
+    "node-fetch": "^2.3.0",
+    "nodemon": "^1.18.10",
+    "uuid4": "^1.1.4",
+    "wav": "^1.0.2"
+  }
+}
